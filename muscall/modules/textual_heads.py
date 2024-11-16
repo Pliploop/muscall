@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from einops import rearrange
 
-from muscall.modules.transformer import Transformer, LayerNorm
+from .transformer import Transformer, LayerNorm
 
 
 class TextualHead(nn.Module):

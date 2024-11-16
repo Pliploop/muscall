@@ -211,6 +211,7 @@ class ModifiedResNet(nn.Module):
         spec = self.spec(x)
         spec = self.amplitude_to_db(spec)
         x = spec.unsqueeze(1)
+        
 
         def stem(x):
             for conv, bn in [

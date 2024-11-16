@@ -5,6 +5,8 @@ from simclr.modules import NT_Xent
 
 from muscall.utils.audio_utils import get_transform_chain
 
+from ..utils import get_transform_chain
+
 
 class SimCLRAudio(nn.Module):
     def __init__(self, encoder, audio_config):
