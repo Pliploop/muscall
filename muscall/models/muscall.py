@@ -247,7 +247,7 @@ class MusCALL(nn.Module):
         
     @torch.no_grad()
     def get_clap_score(self,audio,prompts, latents = True):
-        audio_embed = self.encode_audio(audio)['projected_features']
+        audio_embed = self.encode_audio(audio)['projected_features'] if not latents else audio
         text_embed = self.get_text_embedding(prompts)['projected_pooler_output']
         
         
