@@ -244,3 +244,25 @@ class MusCALL(nn.Module):
     def unfreeze(self):
         self.unfreeze_audio()
         self.unfreeze_text()
+        
+    @torch.no_grad()
+    def get_clap_score(self,audio,prompts, latents = True):
+        audio_embed = self.encode_audio(audio)['projected_features']
+        text_embed = self.get_text_embedding(prompts)['projected_pooler_output']
+        
+        
+        audio_embed = audio_embed.mean(1)
+        sims = audio_embed @ text_embed.t()
+        
+        diag = sims.diag()
+        # print(diag.shape)
+        print(f'diag mean {diag.mean()}')
+        print(f' outside {sims.mean()}')
+        print(f' outside max {sims.max()}')
+        print(f' outside min {sims.min()}')
+        
+        # scores along the diagonal are the scores of the same audio and prompt
+        
+        return {
+            'CLAP_Score': diag.mean()
+        }
