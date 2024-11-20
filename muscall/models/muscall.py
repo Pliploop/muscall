@@ -102,10 +102,16 @@ class MusCALL(nn.Module):
             "projected_features": projected_features,
         }
         
-    def extract_features(self,audio):
-        return self.encode_audio(audio)
+    def extract_features(self,audio, norm=True):
         
-    def get_text_embedding(self, text, return_dict = True, return_tokenizer_only = False, **kwargs):
+        audio_ = self.encode_audio(audio)
+        
+        if norm:
+            audio_['projected_features'] = audio_['projected_features'] / audio_['projected_features'].norm(dim=-1, keepdim=True)
+            print('Features normalized')
+        return audio_
+        
+    def get_text_embedding(self, text, return_dict = True, return_tokenizer_only = False, norm = True,**kwargs):
         text_input = self.tokenizer(text, return_tensors = 'pt', padding = True, truncation = True, max_length = self.max_length)
             
         if return_tokenizer_only:
@@ -121,6 +127,10 @@ class MusCALL(nn.Module):
             text_input = text_embed
         
         text_input['projected_pooler_output'] = text_input['text_features']
+        
+        if norm:
+            text_input['projected_pooler_output'] = text_input['projected_pooler_output'] / text_input['projected_pooler_output'].norm(dim=-1, keepdim=True)
+        
         return text_input
 
     def encode_text(self, text, text_mask):
@@ -154,7 +164,7 @@ class MusCALL(nn.Module):
                 self.audio_ssl(audio, original_audio) if self.do_audio_ssl else 0
             )
 
-        audio_features = self.encode_audio(audio)['text_features']
+        audio_features = self.encode_audio(audio)['projected_features']
         text_features = self.encode_text(text, text_mask)['pooled_output']
 
         # normalise features
