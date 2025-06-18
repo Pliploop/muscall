@@ -108,7 +108,7 @@ class MusCALL(nn.Module):
         
         if norm:
             audio_['projected_features'] = audio_['projected_features'] / audio_['projected_features'].norm(dim=-1, keepdim=True)
-            print('Features normalized')
+            # print('Features normalized')
         return audio_
         
     def get_text_embedding(self, text, return_dict = True, return_tokenizer_only = False, norm = True,**kwargs):
@@ -257,7 +257,7 @@ class MusCALL(nn.Module):
         
     @torch.no_grad()
     def get_clap_score(self,audio,prompts, latents = True):
-        audio_embed = self.encode_audio(audio)['projected_features'] if not latents else audio
+        audio_embed = self.extract_features(audio)['projected_features']
         text_embed = self.get_text_embedding(prompts)['projected_pooler_output']
         
         
